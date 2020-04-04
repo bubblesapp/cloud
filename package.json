@@ -1,0 +1,41 @@
+{
+  "name": "functions",
+  "scripts": {
+    "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "clean": "rm -rf lib/",
+    "build": "npm run clean && tsc",
+    "serve": "npm run build && firebase emulators:start",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "pretest": "npm run build",
+    "test": "jest --runInBand"
+  },
+  "engines": {
+    "node": "10"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^8.10.0",
+    "firebase-functions": "^3.6.0"
+  },
+  "devDependencies": {
+    "@firebase/testing": "^0.18.1",
+    "@types/chance": "^1.0.9",
+    "@types/jest": "^25.1.5",
+    "@types/node": "^13.9.8",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "chance": "^1.1.4",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-promise": "^4.2.1",
+    "jest": "^25.2.6",
+    "prettier": "^2.0.2",
+    "typescript": "^3.2.2"
+  },
+  "private": true
+}
