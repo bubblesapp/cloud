@@ -1,22 +1,15 @@
 import {Profile} from '../../src/models/Profile';
-import * as firebaseTesting from '@firebase/testing';
 import {Invite} from '../../src/models/Invite';
-import {projectId} from '../../index';
-import {App, chance, createTestAdminClientApp, createTestClientApp, rules} from '../index';
+import {beforeAllTests, beforeEachTest, chance, createAdminAPI, createClientAPI} from '../index';
 import {API} from '../../src/API/API';
-import {TestAPI} from '../TestAPI';
 
 describe('functions.onCreateEmailInvite', () => {
-  let client: App;
-  let admin: App;
+  let clientAPI: API;
+  let adminAPI: API;
 
-  beforeAll(async () => {
-    await firebaseTesting.loadFirestoreRules({projectId, rules});
-  });
+  beforeAll(async () => await beforeAllTests());
 
-  beforeEach(async () => {
-    await firebaseTesting.clearFirestoreData({projectId});
-  });
+  beforeEach(async () => await beforeEachTest());
 
   describe('when the invited email is a registered user', () => {
     it('creates an incoming invite', async () => {
@@ -34,12 +27,12 @@ describe('functions.onCreateEmailInvite', () => {
         name: chance.name(),
       };
 
-      admin = createTestAdminClientApp();
+      adminAPI = createAdminAPI();
 
-      await API.createProfile(admin.firestore(), fromProfile);
-      await API.createProfile(admin.firestore(), toProfile);
+      await adminAPI.profiles.set(fromProfile);
+      await adminAPI.profiles.set(toProfile);
 
-      client = createTestClientApp({
+      clientAPI = createClientAPI({
         uid: fromProfile.uid,
         email: fromProfile.email,
       });
@@ -51,18 +44,16 @@ describe('functions.onCreateEmailInvite', () => {
         accepted: false,
       };
 
-      await API.createEmailInvite(client.firestore(), invite);
+      await clientAPI.invites.addEmail(invite);
 
-      await expect(TestAPI.waitUntilIncomingInviteExists(admin, toProfile.uid, fromProfile.uid)).resolves.toBeTruthy();
+      await expect(
+        adminAPI.invites.waitUntilIncomingExists(toProfile.uid, fromProfile.uid),
+      ).resolves.toBeTruthy();
     });
   });
 
   afterEach(async () => {
-    await client.delete();
-    await admin.delete();
-  });
-
-  afterAll(async () => {
-    await Promise.all(firebaseTesting.apps().map((app) => app.delete()));
+    await clientAPI.destroy();
+    await adminAPI.destroy();
   });
 });

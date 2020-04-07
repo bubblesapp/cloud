@@ -1,6 +1,5 @@
 import {Invite} from '../models/Invite';
-import {firebaseAdmin, firebaseFunctions} from '../index';
-import {API} from '../API/API';
+import {adminAPI, firebaseFunctions} from '../index';
 
 export const onCancelInvite = firebaseFunctions.firestore
   .document('users/{uid}/outgoingInvites/{id}')
@@ -8,12 +7,13 @@ export const onCancelInvite = firebaseFunctions.firestore
     const {uid} = context.params;
     const invite = snap.data() as Invite;
     try {
-      await API.deleteEmailInvite(firebaseAdmin.firestore(), uid, invite.to);
+      await adminAPI.invites.deleteEmail(uid, invite.to);
     } catch (err) {
+      // If the invitee is a user, the email invite will already have been deleted.
       console.log('Ignoring error:', err);
     }
-    const toUid = await API.uidWihEmail(firebaseAdmin.firestore(), invite.to);
+    const toUid = await adminAPI.profiles.uidWihEmail(invite.to);
     if (toUid) {
-      await API.deleteIncomingInvite(firebaseAdmin.firestore(), toUid, uid).catch(console.error);
+      await adminAPI.invites.deleteIncoming(toUid, uid).catch(console.error);
     }
   });

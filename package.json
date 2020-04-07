@@ -10,7 +10,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "pretest": "npm run build",
-    "test": "jest --runInBand"
+    "test": "firebase emulators:exec ./tests.sh"
   },
   "engines": {
     "node": "10"
@@ -19,11 +19,14 @@
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^8.10.0",
-    "firebase-functions": "^3.6.0"
+    "firebase-functions": "^3.6.0",
+    "firebase-tools": "^8.0.1",
+    "i18n-js": "^3.5.1"
   },
   "devDependencies": {
     "@firebase/testing": "^0.18.1",
     "@types/chance": "^1.0.9",
+    "@types/i18n-js": "^3.0.1",
     "@types/jest": "^25.1.5",
     "@types/node": "^13.9.8",
     "@typescript-eslint/eslint-plugin": "^2.26.0",

@@ -1,23 +1,18 @@
-import * as firebaseTesting from '@firebase/testing';
 import {Invite} from '../../src/models/Invite';
-import {projectId} from '../../index';
-import {App, chance, createTestAdminClientApp, createTestClientApp, rules} from '../index';
-import {API} from '../../src/API/API';
-import {TestAPI} from '../TestAPI';
+import {beforeAllTests, beforeEachTest, chance, createAdminAPI, createClientAPI} from '../index';
 import {Profile} from '../../src/models/Profile';
+import {API} from '../../src/API/API';
 
 describe.only('functions.onAcceptInvite', () => {
   let inviter: Profile;
   let invitee: Profile;
-  let client: App;
-  let admin: App;
+  let clientAPI: API;
+  let adminAPI: API;
 
-  beforeAll(async () => {
-    await firebaseTesting.loadFirestoreRules({projectId, rules});
-  });
+  beforeAll(async () => await beforeAllTests());
 
   beforeEach(async () => {
-    await firebaseTesting.clearFirestoreData({projectId});
+    await beforeEachTest();
 
     inviter = {
       uid: chance.guid(),
@@ -38,49 +33,49 @@ describe.only('functions.onAcceptInvite', () => {
       accepted: false,
     };
 
-    admin = createTestAdminClientApp();
-    client = createTestClientApp({
+    adminAPI = createAdminAPI();
+    clientAPI = createClientAPI({
       uid: invitee.uid,
       email: invitee.email,
     });
 
-    await API.createProfile(admin.firestore(), inviter);
-    await API.createProfile(admin.firestore(), invitee);
+    await adminAPI.profiles.set(inviter);
+    await adminAPI.profiles.set(invitee);
 
     // Pre-populate outgoing invite
-    await API.createOutgoingInvite(admin.firestore(), invite);
+    await adminAPI.invites.addOutgoing(invite);
 
     // Not creating email invite,
     // so manually pre-populate incoming invite
-    await API.createIncomingInvite(admin.firestore(), invite, invitee.uid);
+    await adminAPI.invites.setIncoming(invitee.uid, invite);
   });
 
   it("adds inviter to invitee's bubble", async () => {
-    await API.acceptInvite(client.firestore(), invitee.uid, inviter.uid);
-    await expect(TestAPI.waitUntilFriendExists(admin, invitee.uid, inviter.uid)).resolves.toBeTruthy();
+    await clientAPI.invites.accept(invitee.uid, inviter.uid);
+    await expect(adminAPI.friends.waitUntilExists(invitee.uid, inviter.uid)).resolves.toBeTruthy();
   });
 
   it("adds invitee to inviter's bubble", async () => {
-    await API.acceptInvite(client.firestore(), invitee.uid, inviter.uid);
-    await expect(TestAPI.waitUntilFriendExists(admin, inviter.uid, invitee.uid)).resolves.toBeTruthy();
+    await clientAPI.invites.accept(invitee.uid, inviter.uid);
+    await expect(adminAPI.friends.waitUntilExists(inviter.uid, invitee.uid)).resolves.toBeTruthy();
   });
 
   it('deletes the outgoing invite from the inviter', async () => {
-    await API.acceptInvite(client.firestore(), invitee.uid, inviter.uid);
-    await expect(TestAPI.waitUntilOutgoingInviteDeleted(admin, inviter.uid, invitee.uid)).resolves.toBeTruthy();
+    await clientAPI.invites.accept(invitee.uid, inviter.uid);
+    await expect(
+      adminAPI.invites.waitUntilOutgoingDeleted(inviter.uid, invitee.email),
+    ).resolves.toBeTruthy();
   });
 
-  it('deletes the incoming invite from the inviter', async () => {
-    await API.acceptInvite(client.firestore(), invitee.uid, inviter.uid);
-    await expect(TestAPI.waitUntilIncomingInviteDeleted(admin, inviter.uid, invitee.uid)).resolves.toBeTruthy();
+  it('deletes the incoming invite from the invitee', async () => {
+    await clientAPI.invites.accept(invitee.uid, inviter.uid);
+    await expect(
+      adminAPI.invites.waitUntilIncomingDeleted(invitee.uid, inviter.uid),
+    ).resolves.toBeTruthy();
   });
 
   afterEach(async () => {
-    await client.delete();
-    await admin.delete();
-  });
-
-  afterAll(async () => {
-    await Promise.all(firebaseTesting.apps().map((app) => app.delete()));
+    await clientAPI.destroy();
+    await adminAPI.destroy();
   });
 });

@@ -1,24 +1,19 @@
 import {Profile} from '../../src/models/Profile';
-import {App, chance, createTestAdminClientApp, createTestClientApp, rules} from '../index';
-import * as firebaseTesting from '@firebase/testing';
-import {projectId} from '../../index';
+import {beforeAllTests, beforeEachTest, chance, createAdminAPI, createClientAPI} from '../index';
 import {Invite} from '../../src/models/Invite';
 import {API} from '../../src/API/API';
-import {TestAPI} from '../TestAPI';
 
 describe('functions.onCancelInvite', () => {
   let inviter: Profile;
   let invitee: Profile;
   let invite: Invite;
-  let client: App;
-  let admin: App;
+  let clientAPI: API;
+  let adminAPI: API;
 
-  beforeAll(async () => {
-    await firebaseTesting.loadFirestoreRules({projectId, rules});
-  });
+  beforeAll(async () => await beforeAllTests());
 
   beforeEach(async () => {
-    await firebaseTesting.clearFirestoreData({projectId});
+    await beforeEachTest();
 
     inviter = {
       uid: chance.guid(),
@@ -39,46 +34,46 @@ describe('functions.onCancelInvite', () => {
       accepted: false,
     };
 
-    admin = createTestAdminClientApp();
+    adminAPI = createAdminAPI();
     // Client logged in as inviter
-    client = createTestClientApp({
+    clientAPI = createClientAPI({
       uid: inviter.uid,
-      email: invitee.email,
+      email: inviter.email,
     });
   });
 
   describe('when the invitee is not a signed up user', () => {
     it('deletes the corresponding email invite', async () => {
-      await API.createProfile(admin.firestore(), inviter);
+      await adminAPI.profiles.set(inviter);
 
-      await API.createOutgoingInvite(admin.firestore(), invite);
-      await API.createEmailInvite(admin.firestore(), invite); // Creates the incoming invite
+      await clientAPI.invites.addOutgoing(invite);
+      await clientAPI.invites.addEmail(invite); // No incoming invite is created
 
-      await API.deleteOutgoingInvite(client.firestore(), inviter.uid, invitee.email);
-      await expect(TestAPI.waitUntilEmailInviteDeleted(admin, invite.to)).resolves.toBeTruthy();
+      await clientAPI.invites.deleteOutgoing(inviter.uid, invitee.email);
+      await expect(
+        adminAPI.invites.waitUntilEmailDeleted(inviter.uid, invite.to),
+      ).resolves.toBeTruthy();
     });
   });
 
   describe('when the invitee is a signed up user', () => {
     it('deletes the corresponding incoming invite', async () => {
-      await API.createProfile(admin.firestore(), inviter);
-      await API.createProfile(admin.firestore(), invitee);
+      await adminAPI.profiles.set(inviter);
+      await adminAPI.profiles.set(invitee);
 
-      await API.createOutgoingInvite(admin.firestore(), invite);
-      await API.createEmailInvite(admin.firestore(), invite); // Creates the incoming invite and deletes the email invite
-      await TestAPI.waitUntilIncomingInviteExists(admin, invitee.uid, inviter.uid);
+      await clientAPI.invites.addOutgoing(invite);
+      await clientAPI.invites.addEmail(invite); // Incoming invite is created and email invite is deleted
+      await adminAPI.invites.waitUntilIncomingExists(invitee.uid, inviter.uid);
 
-      await API.deleteOutgoingInvite(client.firestore(), inviter.uid, invitee.email);
-      await expect(TestAPI.waitUntilIncomingInviteDeleted(admin, invitee.uid, inviter.uid)).resolves.toBeTruthy();
+      await clientAPI.invites.deleteOutgoing(inviter.uid, invitee.email);
+      await expect(
+        adminAPI.invites.waitUntilIncomingDeleted(invitee.uid, inviter.uid),
+      ).resolves.toBeTruthy();
     });
   });
 
   afterEach(async () => {
-    await client.delete();
-    await admin.delete();
-  });
-
-  afterAll(async () => {
-    await Promise.all(firebaseTesting.apps().map((app) => app.delete()));
+    await clientAPI.destroy();
+    await adminAPI.destroy();
   });
 });
