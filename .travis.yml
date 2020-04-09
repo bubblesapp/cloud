@@ -16,6 +16,6 @@ deploy:
   # Deploy to dev firebase project
   - provider: script
     script: bash ./deploy.sh DEV_FIREBASE_PROJECT
-    cleanup: false
+    skip-cleanup: true
     on:
       branch: master
