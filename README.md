@@ -1,5 +1,4 @@
-# cloud
-Cloud functions
+# Cloud functions
 
 [![Build Status](https://travis-ci.org/bubblesapp/cloud.svg?branch=master)](https://travis-ci.org/bubblesapp/cloud)
 
