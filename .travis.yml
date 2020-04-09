@@ -16,7 +16,7 @@ deploy:
   # Deploy to dev firebase project
   - provider: firebase
     token:
-      secure: $FIREBASE_TOKEN
+      secure: "X/z88awmNhX+TmjO1oT3xhCPO7TKyeIK9qlKIyiX58YHB4oGrqD8xaXGTzIG2w+ZKGTe6Aladr/6qnO+V9NGs8j9hniz1+C3DLknT9OySgWkvZpdli/q2gqNOoHPWv1g+2hCW19ZbfYGg+UF4KcfwrWcl7WYX+ASK2HFDtXzVvVJDsxKhfatGhDnOEOejxaZC/lHuoJE5QOsKJG0IpVs7WY/SPBwBTLNLJ2NwhCN8hH7W3pTnZdVo+PUOMEKWxFOX5dIO4Fk/YUCmu5IvZO0keSlM5S9temoLyc9NX6t1iIdhvFS0eITlpqMt9MrV07nO/mZuJ8b5y+y8MUUSqWL1aeqLFmdLG5e2QUoTiFjSIm9QhMIRmZmTdew0ZXmZcdIgsficXzTsQizQS2tTM8ej5IT5VkseZxIav+axzSI4tNewFskuEyDzUi7+d/N3ySQGE24H2p4NVF42tOUKgVXwxMJr2b6HPZcV5u9aRzi0wzWA97nU+g1hNmSx+pZPWQxVZ42jYYgRjPNzaJt72vRkau7NrHs4+Up/C8xEayQobM3/8ydRgopotUSxpHIW8xNwQtfnJ+BlZ8V2NOMvmivxBoWX8VAuVWrGwQoj/4AdKI0fgJGZdHMi1NVlUR7D4BlbM5cqQPY889ZCivgB0VJQr7mXkd+s14C4nxtW0kPdfA="
     project: $DEV_FIREBASE_PROJECT
     message: "Cloud function deployment to dev env."
     skip_cleanup: true
@@ -25,7 +25,7 @@ deploy:
   # Deploy to dev firebase project
   - provider: firebase
     token:
-      secure: $FIREBASE_TOKEN
+      secure: "X/z88awmNhX+TmjO1oT3xhCPO7TKyeIK9qlKIyiX58YHB4oGrqD8xaXGTzIG2w+ZKGTe6Aladr/6qnO+V9NGs8j9hniz1+C3DLknT9OySgWkvZpdli/q2gqNOoHPWv1g+2hCW19ZbfYGg+UF4KcfwrWcl7WYX+ASK2HFDtXzVvVJDsxKhfatGhDnOEOejxaZC/lHuoJE5QOsKJG0IpVs7WY/SPBwBTLNLJ2NwhCN8hH7W3pTnZdVo+PUOMEKWxFOX5dIO4Fk/YUCmu5IvZO0keSlM5S9temoLyc9NX6t1iIdhvFS0eITlpqMt9MrV07nO/mZuJ8b5y+y8MUUSqWL1aeqLFmdLG5e2QUoTiFjSIm9QhMIRmZmTdew0ZXmZcdIgsficXzTsQizQS2tTM8ej5IT5VkseZxIav+axzSI4tNewFskuEyDzUi7+d/N3ySQGE24H2p4NVF42tOUKgVXwxMJr2b6HPZcV5u9aRzi0wzWA97nU+g1hNmSx+pZPWQxVZ42jYYgRjPNzaJt72vRkau7NrHs4+Up/C8xEayQobM3/8ydRgopotUSxpHIW8xNwQtfnJ+BlZ8V2NOMvmivxBoWX8VAuVWrGwQoj/4AdKI0fgJGZdHMi1NVlUR7D4BlbM5cqQPY889ZCivgB0VJQr7mXkd+s14C4nxtW0kPdfA="
     project: $SCREENSHOTS_FIREBASE_PROJECT
     message: "Cloud function deployment to screenshots env."
     skip_cleanup: true
@@ -34,7 +34,7 @@ deploy:
   # On tags, deploy to prod firebase project
   - provider: firebase
     token:
-      secure: $FIREBASE_TOKEN
+      secure: "X/z88awmNhX+TmjO1oT3xhCPO7TKyeIK9qlKIyiX58YHB4oGrqD8xaXGTzIG2w+ZKGTe6Aladr/6qnO+V9NGs8j9hniz1+C3DLknT9OySgWkvZpdli/q2gqNOoHPWv1g+2hCW19ZbfYGg+UF4KcfwrWcl7WYX+ASK2HFDtXzVvVJDsxKhfatGhDnOEOejxaZC/lHuoJE5QOsKJG0IpVs7WY/SPBwBTLNLJ2NwhCN8hH7W3pTnZdVo+PUOMEKWxFOX5dIO4Fk/YUCmu5IvZO0keSlM5S9temoLyc9NX6t1iIdhvFS0eITlpqMt9MrV07nO/mZuJ8b5y+y8MUUSqWL1aeqLFmdLG5e2QUoTiFjSIm9QhMIRmZmTdew0ZXmZcdIgsficXzTsQizQS2tTM8ej5IT5VkseZxIav+axzSI4tNewFskuEyDzUi7+d/N3ySQGE24H2p4NVF42tOUKgVXwxMJr2b6HPZcV5u9aRzi0wzWA97nU+g1hNmSx+pZPWQxVZ42jYYgRjPNzaJt72vRkau7NrHs4+Up/C8xEayQobM3/8ydRgopotUSxpHIW8xNwQtfnJ+BlZ8V2NOMvmivxBoWX8VAuVWrGwQoj/4AdKI0fgJGZdHMi1NVlUR7D4BlbM5cqQPY889ZCivgB0VJQr7mXkd+s14C4nxtW0kPdfA="
     project: $DEV_FIREBASE_PROJECT
     message: "Cloud function deployment to prod env."
     skip_cleanup: true
