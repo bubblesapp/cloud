@@ -10,4 +10,5 @@ before_install:
 install:
   - npm install
 script:
+  - firebase use $FIREBASE_USE
   - npm test
