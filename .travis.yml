@@ -19,3 +19,9 @@ deploy:
     skip-cleanup: true
     on:
       branch: master
+  # Deploy to screenshots firebase project
+  - provider: script
+    script: bash ./deploy.sh SCREENSHOTS_FIREBASE_PROJECT
+    skip-cleanup: true
+    on:
+      branch: master
