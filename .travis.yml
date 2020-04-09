@@ -10,5 +10,31 @@ before_install:
 install:
   - npm install
 script:
-  - firebase use $FIREBASE_USE
+  - firebase use $DEV_FIREBASE_PROJECT
   - npm test
+deploy:
+  # Deploy to dev firebase project
+  - provider: firebase
+    token:
+      secure: $FIREBASE_TOKEN
+    project: $DEV_FIREBASE_PROJECT
+    message: "Cloud function deployment to dev env."
+    on:
+      branch: master
+  # Deploy to dev firebase project
+  - provider: firebase
+    token:
+      secure: $FIREBASE_TOKEN
+    project: $SCREENSHOTS_FIREBASE_PROJECT
+    message: "Cloud function deployment to screenshots env."
+    on:
+      branch: master
+  # On tags, deploy to prod firebase project
+  - provider: firebase
+    token:
+      secure: $FIREBASE_TOKEN
+    project: $DEV_FIREBASE_PROJECT
+    message: "Cloud function deployment to prod env."
+    on:
+      branch: master
+      tags: true
