@@ -1,12 +1,21 @@
-import admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import {FirebaseAPI} from './API/firebase/FirebaseAPI';
-import {API} from './API/API';
+import admin from 'firebase-admin';
+import {API} from '@bubblesapp/api';
+import {FirebaseAPI} from '@bubblesapp/api';
+
+let projectId;
+if (process.env.FIREBASE_CONFIG) {
+  projectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId;
+} else if (process.env.GCLOUD_PROJECT) {
+  projectId = JSON.parse(process.env.GCLOUD_PROJECT);
+}
+
+export {projectId};
 
 export const firebaseFunctions = functions.region('europe-west1');
 
-const firebaseAdmin = admin.initializeApp({
+const app = admin.initializeApp({
   credential: admin.credential.applicationDefault(),
 });
 
-export const adminAPI: API = new FirebaseAPI(firebaseAdmin.firestore());
+export const adminAPI: API = new FirebaseAPI(app);

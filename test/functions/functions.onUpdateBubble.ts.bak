@@ -1,0 +1,92 @@
+import {API, Profile} from '@bubblesapp/api';
+import {beforeAllTests, beforeEachTest, chance, createAdminAPI, createClientAPI} from '../index';
+
+/*
+  Test scenario:
+
+  In the following, 'recently' means less than N days ago.
+
+  Alice is the user whose bubble will pop.
+  Bob is a friend of Alice she met recently. -> Bob's bubble should pop.
+  Charlie is a friend of Alice she hasn't met recently. -> Charlie's bubble should NOT pop.
+  Daniel is a friend of Bob he met recently, after Bob met Alice. -> Daniel's bubble should pop.
+  Edouard is a friend of Bob he met recently, before Bob met Alice. -> Edouard's bubble should NOT pop.
+  Frank is a friend of Charlie he met recently. -> Frank's bubble should NOT pop.
+  George is a friend of
+ */
+describe('functions.onUpdateBubble', () => {
+  let profile: Profile;
+  let friendMetRecently: Profile;
+  let friendNotMetRecently: Profile;
+  let friendOfFriendNotMetRecently: Profile;
+  let friendOfFriendNotMetRecently: Profile;
+  let clientAPI: API;
+  let adminAPI: API;
+
+  beforeAll(async () => await beforeAllTests());
+
+  beforeEach(async () => {
+    await beforeEachTest();
+
+    inviter = {
+      uid: chance.guid(),
+      name: chance.name(),
+      email: chance.email(),
+    };
+
+    invitee = {
+      uid: chance.guid(),
+      name: chance.name(),
+      email: chance.email(),
+    };
+
+    invite = {
+      from: inviter.uid,
+      to: invitee.email,
+      createdAt: new Date().getTime(),
+      accepted: false,
+    };
+
+    adminAPI = createAdminAPI();
+    // Client logged in as inviter
+    clientAPI = createClientAPI({
+      uid: inviter.uid,
+      email: inviter.email,
+    });
+  });
+
+  describe('when the invitee is not a signed up user', () => {
+    it('deletes the corresponding email invite', async () => {
+      await adminAPI.profiles.set(inviter);
+
+      await clientAPI.invites.addOutgoing(invite);
+      await clientAPI.invites.addEmail(invite); // No incoming invite is created
+
+      await clientAPI.invites.deleteOutgoing(inviter.uid, invitee.email);
+      await expect(
+        adminAPI.invites.waitUntilEmailDeleted(inviter.uid, invite.to),
+      ).resolves.toBeTruthy();
+    });
+  });
+
+  describe('when the invitee is a signed up user', () => {
+    it('deletes the corresponding incoming invite', async () => {
+      await adminAPI.profiles.set(inviter);
+      await adminAPI.profiles.set(invitee);
+
+      await clientAPI.invites.addOutgoing(invite);
+      await clientAPI.invites.addEmail(invite); // Incoming invite is created and email invite is deleted
+      await adminAPI.invites.waitUntilIncomingExists(invitee.uid, inviter.uid);
+
+      await clientAPI.invites.deleteOutgoing(inviter.uid, invitee.email);
+      await expect(
+        adminAPI.invites.waitUntilIncomingDeleted(invitee.uid, inviter.uid),
+      ).resolves.toBeTruthy();
+    });
+  });
+
+  afterEach(async () => {
+    await clientAPI.destroy();
+    await adminAPI.destroy();
+  });
+});

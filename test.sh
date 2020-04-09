@@ -1,0 +1,1 @@
+mocha "./lib/test/**/*.js"

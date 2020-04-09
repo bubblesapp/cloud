@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - 12
+cache:
+  npm: true
+  directories:
+    - $HOME/.cache/firebase/emulators
+before_install:
+  - curl -sL https://firebase.tools | bash
+install:
+  - npm install
+script:
+  - npm test

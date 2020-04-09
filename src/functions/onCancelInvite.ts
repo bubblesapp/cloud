@@ -1,5 +1,5 @@
-import {Invite} from '../models/Invite';
-import {adminAPI, firebaseFunctions} from '../index';
+import {Invite} from '@bubblesapp/api';
+import {adminAPI, firebaseFunctions} from '../';
 
 export const onCancelInvite = firebaseFunctions.firestore
   .document('users/{uid}/outgoingInvites/{id}')

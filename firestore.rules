@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isFriends(uid1, uid2) {
+      return exists(/databases/$(database)/documents/users/$(uid1)/friends/$(uid2));
+    }
+
+    function isCurrentUser(uid) {
+      return request.auth.uid == uid
+    }
+
+    function isInvitedBy(invitee, inviter) {
+      return exists(/databases/$(database)/documents/users/$(invitee)/incomingInvites/$(inviter))
+    }
+
+    function isValidInvite(data) {
+    	return 'from' in data
+      	&& 'to' in data
+        && 'createdAt' in data
+        && 'accepted' in data;
+    }
+
+    // Top-level invite flags (picked-up by backend)
+    match /emailInvites/{id} {
+    	allow read: if false
+      allow create:
+      	if request.auth.uid == request.resource.data.from
+      		&& request.resource.data.accepted == false
+        	&& isValidInvite(request.resource.data)
+    }
+
+    // Top-level invite acceptances (picked-up by backend)
+    match /acceptedInvites/{id} {
+    	allow read: if false
+      allow create: if isCurrentUser(request.resource.data.to)
+      	&& isInvitedBy(request.resource.data.to, request.resource.data.from)
+      	&& request.resource.data.accepted == true
+        && isValidInvite(request.resource.data)
+    }
+
+    //Profiles
+    match /profiles/{uid} {
+        allow read:
+        	if (isCurrentUser(uid) && resource.data.uid == uid)
+        	|| isFriends(uid, request.auth.uid)
+          || isInvitedBy(request.auth.uid, uid)
+        allow delete:
+        	if isCurrentUser(uid)
+        allow create, update:
+        	if (isCurrentUser(uid) && request.resource.data.uid == uid)
+          && 'name' in request.resource.data
+          && 'email' in request.resource.data
+    }
+
+    // User incoming invites
+    // Backend writes here once email matches a user
+    match /users/{uid}/incomingInvites/{fromId} {
+    	allow read, delete: if isCurrentUser(uid)
+      allow create: if false
+      allow update: if isCurrentUser(uid)
+      	&& request.resource.data.accepted == true
+        && request.resource.data.from == resource.data.from
+        && request.resource.data.to == resource.data.to
+    }
+
+    // User outgoing invites
+    match /users/{uid}/outgoingInvites/{inviteId} {
+    	allow read, delete: if isCurrentUser(uid)
+      allow create: if isCurrentUser(uid)
+      	&& request.resource.data.from == uid
+        && isValidInvite(request.resource.data)
+      allow update: if false
+    }
+
+    // User friends
+    match /users/{uid}/friends/{friendId} {
+    	allow read: if isCurrentUser(uid)
+      allow delete: if isCurrentUser(uid) || (isCurrentUser(friendId) && isFriends(friendId, uid))
+      // Friends can only be created if an invite exists
+      allow create: if isCurrentUser(uid)
+       	&& exists(/databases/$(database)/documents/users/$(uid)/incomingInvites/$(friendId))
+        && request.resource.data.uid == friendId
+      // lastMet can be updated, but not uid
+      allow update: if (isCurrentUser(uid) || (isCurrentUser(friendId) && isFriends(friendId, uid)))
+      	&& request.resource.data.uid == resource.data.uid
+    }
+  }
+}

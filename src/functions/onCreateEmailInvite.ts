@@ -1,6 +1,5 @@
-import {Invite} from '../models/Invite';
-import {adminAPI, firebaseFunctions} from '../index';
-import {NewInviteNotification} from '../models/NewInviteNotification';
+import {Invite} from '@bubblesapp/api';
+import {adminAPI, firebaseFunctions} from '../';
 
 export const onCreateEmailInvite = firebaseFunctions.firestore
   .document('emailInvites/{id}')

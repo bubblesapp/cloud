@@ -8,13 +8,14 @@
     "esModuleInterop": true,
     "lib": [ "es6", "dom" ],
     "typeRoots": ["node_modules/@types"],
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "moduleResolution": "Node"
   },
   "compileOnSave": true,
   "include": [
-    "./index.ts",
+    "index.ts",
     "src",
-    "__tests__"
+    "test"
   ]
 }
 

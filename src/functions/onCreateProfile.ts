@@ -1,5 +1,5 @@
-import {adminAPI, firebaseFunctions} from '../index';
-import {Profile} from '../models/Profile';
+import {adminAPI, firebaseFunctions} from '../';
+import {Profile} from '@bubblesapp/api';
 
 export const onCreateProfile = firebaseFunctions.firestore
   .document('profiles/{uid}')

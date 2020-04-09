@@ -1,4 +1,4 @@
-import {adminAPI, firebaseFunctions} from '../index';
+import {adminAPI, firebaseFunctions} from '../';
 
 export const onDeleteFriend = firebaseFunctions.firestore
   .document('users/{ofUid}/friends/{friendUid}')
