@@ -25,3 +25,11 @@ deploy:
     skip-cleanup: true
     on:
       branch: master
+  # Deploy to prod firebase project, only on git tags
+  - provider: script
+    script: bash ./deploy.sh PROD_FIREBASE_PROJECT
+    skip-cleanup: true
+    on:
+      branch: master
+      tags: true
+
