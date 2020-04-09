@@ -19,6 +19,7 @@ deploy:
       secure: $FIREBASE_TOKEN
     project: $DEV_FIREBASE_PROJECT
     message: "Cloud function deployment to dev env."
+    skip_cleanup: true
     on:
       branch: master
   # Deploy to dev firebase project
@@ -27,6 +28,7 @@ deploy:
       secure: $FIREBASE_TOKEN
     project: $SCREENSHOTS_FIREBASE_PROJECT
     message: "Cloud function deployment to screenshots env."
+    skip_cleanup: true
     on:
       branch: master
   # On tags, deploy to prod firebase project
@@ -35,6 +37,7 @@ deploy:
       secure: $FIREBASE_TOKEN
     project: $DEV_FIREBASE_PROJECT
     message: "Cloud function deployment to prod env."
+    skip_cleanup: true
     on:
       branch: master
       tags: true
