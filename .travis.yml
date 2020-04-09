@@ -4,7 +4,7 @@ node_js:
 cache:
   npm: true
   directories:
-    - $HOME/.cache/firebase/emulators
+    - /home/travis/.cache/firebase/emulators
 before_install:
   - curl -sL https://firebase.tools | bash
 install:

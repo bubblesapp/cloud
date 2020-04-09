@@ -102,9 +102,15 @@ describe('functions.onDeleteProfile', () => {
 
       await clientAPIAsInviter.profiles.delete(inviter.uid);
 
-      const result1 = await adminAPI.invites.waitUntilIncomingDeleted(otherInvitee.uid, inviter.uid);
+      const result1 = await adminAPI.invites.waitUntilIncomingDeleted(
+        otherInvitee.uid,
+        inviter.uid,
+      );
       expect(result1).to.be.true;
-      const result2 = await adminAPI.invites.waitUntilOutgoingDeleted(inviter.uid, otherInvitee.email);
+      const result2 = await adminAPI.invites.waitUntilOutgoingDeleted(
+        inviter.uid,
+        otherInvitee.email,
+      );
       expect(result2).to.be.true;
     });
   });
@@ -119,7 +125,10 @@ describe('functions.onDeleteProfile', () => {
       const result1 = await adminAPI.invites.waitUntilEmailDeleted(inviter.uid, inviteNotUser.to);
       expect(result1).to.be.true;
 
-      const result2 = await adminAPI.invites.waitUntilOutgoingDeleted(inviter.uid, inviteNotUser.to);
+      const result2 = await adminAPI.invites.waitUntilOutgoingDeleted(
+        inviter.uid,
+        inviteNotUser.to,
+      );
       expect(result2).to.be.true;
     });
   });

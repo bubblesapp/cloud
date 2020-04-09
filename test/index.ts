@@ -32,6 +32,5 @@ const createTestClientApp = (auth: Auth): App =>
   firebaseTesting.initializeTestApp({projectId, auth});
 const createTestAdminApp = (): App => firebaseTesting.initializeAdminApp({projectId});
 
-export const createClientAPI = (auth: Auth): API =>
-  new FirebaseAPI(createTestClientApp(auth));
+export const createClientAPI = (auth: Auth): API => new FirebaseAPI(createTestClientApp(auth));
 export const createAdminAPI = (): API => new FirebaseAPI(createTestAdminApp());
