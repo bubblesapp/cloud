@@ -1,9 +1,9 @@
 {
   "name": "functions",
   "scripts": {
-    "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "lint": "./node_modules/.bin/tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "clean": "rm -rf lib/",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && ./node_modules/.bin/tsc",
     "serve": "npm run build && firebase emulators:start",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
