@@ -70,6 +70,7 @@ describe('functions.onCancelInvite', () => {
   });
 
   afterEach(async () => {
+    this.timeout(3000);
     await adminAPI.wait(2000);
     await clientAPI.destroy();
     await adminAPI.destroy();
