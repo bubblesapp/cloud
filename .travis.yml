@@ -10,7 +10,7 @@ before_install:
 install:
   - npm install
 script:
-  - firebase use $DEV_FIREBASE_PROJECT
+  - firebase use ${DEV_FIREBASE_PROJECT}
   - npm test
 deploy:
   # Deploy to dev firebase project
