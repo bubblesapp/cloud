@@ -9,7 +9,7 @@
     "lib": [ "es6", "dom" ],
     "typeRoots": ["node_modules/@types"],
     "noUnusedLocals": false,
-    "moduleResolution": "Node"
+    "moduleResolution": "node"
   },
   "compileOnSave": true,
   "include": [
